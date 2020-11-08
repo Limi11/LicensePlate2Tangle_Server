@@ -36,3 +36,10 @@ class ParkingMeter(object):
 
     def get_address(self):
         print(self.__iotaaddress)
+
+    def print(self):
+        print(self.__id)
+        print(self.__channelid) 
+        print(self.__iotaaddress)
+
+

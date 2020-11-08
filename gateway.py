@@ -2,11 +2,10 @@
 
 # **********includes*********** #
 
-#include libraries
-from iota import Iota
-from threading import Thread
+# include libraries
+import json
 
-#include functions
+# include functions
 import sensordata
 import booking
 import reservation
@@ -15,6 +14,22 @@ import qrcode
 # include classes 
 from parkingmeter import ParkingMeter
 from container import Container
+from iota import Iota
+from threading import Thread
+
+# static initialization of parkingmeters through init file
+# there should ne a dynamic initialization in future
+
+# inti a container for our parkingmeters
+container = Container()
+
+# get init file data and fill our parkingmeters container
+with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
+    data = json.load(json_file)
+    for p in data["ParkingMeters"]:
+        parkingmeter = ParkingMeter(p["ID"],1234,0,p["Location"],booking.newaddress())
+        container.add(parkingmeter)
+
 
 
 # **********functions*********** #
@@ -36,9 +51,5 @@ sensorthread.start()
 bookingthread.start()
 reservationthread.start()
 
-parkingmeter = ParkingMeter(0,1234,1,"GPS coordinates",booking.newaddress())
-parkingmeter.get_sensordata()
-parkingmeter.get_address()
-
-container = Container(parkingmeter)
-container.pop()
+# ***********test************** #
+container.print()

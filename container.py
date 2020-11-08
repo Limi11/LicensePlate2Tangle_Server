@@ -8,14 +8,14 @@ class Container(object):
     
     __items = []
 
-    def __init__(self, ParkingMeter):
+    def add(self, ParkingMeter):
         self.__items.append(ParkingMeter)
 
-    def push(self, item):
-        self.__items.append(item)
+    def print(self):
+        for p in self.__items:
+            p.print()
 
-    def pop(self):
-        return self.__items.pop()
+   
 
 
 
