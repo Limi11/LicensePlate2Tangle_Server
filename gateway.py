@@ -10,6 +10,7 @@ import sensordata
 import booking
 import reservation
 import qrcode
+import streams
 
 # include classes 
 from parkingmeter import ParkingMeter
@@ -23,13 +24,18 @@ from threading import Thread
 # inti a container for our parkingmeters
 container = Container()
 
-# get init file data and fill our parkingmeters container
+# get init file data and build our parkingmeters container
 with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
     data = json.load(json_file)
     for p in data["ParkingMeters"]:
         parkingmeter = ParkingMeter(p["ID"],1234,0,p["Location"],booking.newaddress())
         container.add(parkingmeter)
 
+# now we need to get the reservation informations back from tangle
+# ... 
+
+# start streams gateway read back channel ID and save information into init.txt
+# ...
 
 
 # **********functions*********** #
@@ -45,6 +51,8 @@ sensorthread = Thread(target=sensordata.sensordata)
 bookingthread = Thread(target=booking.booking)
 # this is the thread for the reservation() function
 reservationthread = Thread(target=reservation.reservation)
+# this is the thread that sends parking meters data to IOTA Streams
+streamsthread = Thread(target=streams.streams)
 
 # ************start************* #
 sensorthread.start()

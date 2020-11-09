@@ -1,6 +1,5 @@
 
 # tnis function is checking if there are new bookings on the python addresses
-# and sends the information to the streams parking channels
 
 # includes 
 from iota import Iota
