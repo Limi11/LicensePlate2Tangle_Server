@@ -32,7 +32,6 @@ with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
         container.add(parkingmeter)
 
 # now we need to get the reservation informations back from tangle
-# ... 
 
 # start streams gateway read back channel ID and save information into init.txt
 # ...
