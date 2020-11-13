@@ -1,3 +1,4 @@
+
 # this is the "main" file of the gateway program
 
 # **********includes*********** #
@@ -6,11 +7,13 @@
 import json
 
 # include functions
-import sensordata
 import booking
 import reservation
 import qrcode
 import streams
+import sensordata
+import globals
+
 
 # include classes 
 from parkingmeter import ParkingMeter
@@ -18,18 +21,21 @@ from container import Container
 from iota import Iota
 from threading import Thread
 
+# ********initialization********* #
+
 # static initialization of parkingmeters through init file
 # there should ne a dynamic initialization in future
-
 # inti a container for our parkingmeters
-container = Container()
+# we need the container global, therefore we initialize it in a function
+
+globals.container_init()
 
 # get init file data and build our parkingmeters container
 with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
     data = json.load(json_file)
     for p in data["ParkingMeters"]:
-        parkingmeter = ParkingMeter(p["ID"],1234,0,p["Location"],booking.newaddress())
-        container.add(parkingmeter)
+        parkingmeter = ParkingMeter(p["ID"],1234,"Free",p["Location"],booking.newaddress())
+        globals.container.add(parkingmeter)
 
 # now we need to get the reservation informations back from tangle
 
@@ -59,4 +65,3 @@ bookingthread.start()
 reservationthread.start()
 
 # ***********test************** #
-container.print()
