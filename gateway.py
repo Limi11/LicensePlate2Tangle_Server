@@ -29,6 +29,7 @@ from threading import Thread
 # we need the container global, therefore we initialize it in a function
 
 globals.container_init()
+globals.event_init()
 
 # get init file data and build our parkingmeters container
 with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
@@ -63,5 +64,6 @@ streamsthread = Thread(target=streams.streams)
 sensorthread.start()
 bookingthread.start()
 reservationthread.start()
+streamsthread.start()
 
 # ***********test************** #

@@ -30,7 +30,7 @@ class ParkingMeter(object):
 
     # method to print sensordata in json format
     def get_sensordata(self):
-        print(self.__data)
+        return self.__data
 
     # method to set sensor values out http post sensor dict
     def set_sensordata(self,data):
