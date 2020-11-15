@@ -19,26 +19,14 @@ headers = {'content-type': 'application/json', 'Accept': 'text/plain'}
 # this is the payload that things network will send
 payload = {
   "app_id": "my-app-id",
-  "dev_id": "my-dev-id",
+  "dev_id": "PM1",
   "hardware_serial": "0102030405060708",
   "port": 1,
   "counter": 2,
   "is_retry": False,
   "confirmed": False,
-  "payload_raw": "AQIDBA==",
-  "payload_fields": {
-    "uid":"PM1",
-    "stat":0xFF,
-    "sens": [
-        {
-          "temp":23,
-          "hum":70,
-          "pres":1000,
-          "acc":2000,
-          "occ":0
-          },
-        ],
-  },
+  "payload_raw": "eyJoIjo1Ni4yOSwidCI6MjEuNzAsInAiOjk4MS40NiwicyI6IjB4MDAifQ==",
+  "payload_fields": {},
   "metadata": {
     "time": "1970-01-01T00:00:00Z",
     "frequency": 868.1,

@@ -25,31 +25,34 @@ def streams():
 
         # wait for event receive data
         globals.receive_data.wait()
-
-        globals.receive_data.clear()
-
+        
+        # get id of device that sends the new data
         id = globals.container.get_last_update_id()
         
+        # get object that sends data 
         pm = globals.container.get_element_by_id(id)
 
-        payload = pm.get_sensordata()
+        # get sensordata as json string
+        data = pm.get_sensordata()
 
+        payload = "{\"iot2tangle\": " + data + "," + "\"device\": \"DEVICE_ID_1\", \"timestamp\": 1558511111 }"
 
-        payload = json.dumps(payload) 
-
-        payload = "{\"iot2tangle\": [" + payload + "], " + "\"device\": \"DEVICE_ID_1\", \"timestamp\": 1558511111 }"
+        print(payload)
 
         payload = json.loads(payload)
 
-        print(payload)
+       
 
 
         # this is the payload that things network will send
-        payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
+        #payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
 
-        print(payload)
+        #print(payload)
 
         client.streams_client(payload)
+
+        # clear receive data event, waiting for new receive data event
+        globals.receive_data.clear()
 
 
 

@@ -8,13 +8,19 @@ class ParkingMeter(object):
     __license = ""
     __location = ""
     __iotaaddress = ""
+    __ttnurl = ""
 
+    # temperature
     __temp = 0.0
+    # humidity
     __hum = 0
+    # pressure
     __pres = 0
-    __acc = 0
-    __occ = 0
-    __data = {}
+    # status
+    __stat = 0x00
+
+    # json data from device
+    __data = ""
 
     # consturctor 
     def __init__(self,id,channelid,license,location,iotaaddress):
@@ -28,22 +34,30 @@ class ParkingMeter(object):
     def get_id(self):
         return str(self.__id) 
 
-    # method to print sensordata in json format
+    # method to return sensordata in json streams format
     def get_sensordata(self):
-        return self.__data
+        sdata = "[ {\"sensor\": \"Temperature\", \"data\":" + str(self.__temp) + "}, { \"sensor\": \"Humidity\", \"data\":" + str(self.__hum) + "}, {\"sensor\": \"Pressure\", \"data\":" +  str(self.__pres) + "}, {\"information\": \"Status\", \"data\":\"" + str(self.__stat) + "\"}]"
+        return sdata
 
-    # method to set sensor values out http post sensor dict
-    def set_sensordata(self,data):
-        self.__data = data
-        self.__temp = data.get("temp")
-        self.__hum = data.get("hum")
-        self.__pres = data.get("pres")
-        self.__acc = data.get("acc")
-        self.__occ = data.get("occ")
-
-    
+    # method to get uplink url from ttn
+    def get_url(self, ttnurl):
+        return self.__ttnurl
+  
     def get_bookings(self):
         print("get bookings")
+
+  # method to set sensor values out http post sensor dict
+    def set_sensordata(self,data):
+        self.__data = data
+        self.__temp = data.get("t")
+        self.__hum = data.get("h")
+        self.__pres = data.get("p")
+        self.__stat = data.get("s")
+
+    # method to set downlink url of tth
+    def set_downlink(self,ttnurl):
+        self.__ttnurl = ttnurl 
+
 
     def set_bookings(self):
         print("set bookings")

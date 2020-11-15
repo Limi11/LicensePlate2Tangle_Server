@@ -8,6 +8,7 @@ import json
 import requests
 import time
 import globals
+import base64
 
 
 # include classes
@@ -46,8 +47,25 @@ class Server(BaseHTTPRequestHandler):
       # json loads makes a dictionary out of json string
       jdic = json.loads(spost_body)
 
+      # extract payload out of data
+      payload = jdic.get("payload_raw")
+
+      # decode payload from base64 format
+      encoded_payload = base64.b64decode(payload)
+      
+      # decode message to utf-8 format
+      encoded_payload = encoded_payload.decode("utf-8")
+
+      print(encoded_payload)
+
+      # json loads makes a dictionary out of json string
+      encoded_payload = json.loads(encoded_payload)
+
       # extract ID out of payload_field
-      uid = jdic.get("payload_fields").get("uid")
+      uid = jdic.get("dev_id")
+
+      # extract "downlink_url"
+      downlink = jdic.get("downlink_url") 
 
       # lock thread during access of global container
       mutex.acquire()
@@ -56,8 +74,10 @@ class Server(BaseHTTPRequestHandler):
       pmobj = globals.container.get_element_by_id(uid)
 
       # set sensordata in parkingmeter object with id
-      payload = jdic.get("payload_fields")
-      pmobj.set_sensordata(payload)
+      pmobj.set_sensordata(encoded_payload)
+
+      # set ttnurl 
+      pmobj.set_downlink(downlink)
 
       # release thread after access of global container
       mutex.release()
