@@ -6,6 +6,7 @@
 import requests
 import json
 import os
+import base64
 
 
 # include classes
@@ -39,15 +40,25 @@ def ttn_client(data, url_streams):
     # definition of headers type
     headers = {'content-type': 'application/json'}
 
-    # this is the payload that things network will send
-    payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
+    # this is the a raw payload example that things network will accept
+    payload = {
+    "dev_id": "parking_meter_cc1",    # The device ID
+    "port": 1,                # LoRaWAN FPort
+    "confirmed": False,       # Whether the downlink should be confirmed by the device
+    "payload_raw": "AQIDBA=="} # Base64 encoded payload: [0x01, 0x02, 0x03, 0x04]
 
+    # transform dict into a byte format
+    payload = json.dumps(payload).encode('utf-8')
 
-    # convert from dictionary to string
-    payload = json.dumps(payload)
+    print(payload)
+    encoded_payload = payload
+
+    # base64 is not accepted !!!
+    # encoded payload from base64 format
+    #encoded_payload = base64.b64encode(payload)
 
     # make a post request to the gateway
-    r = requests.post(url_streams, data=payload, headers=headers)
+    r = requests.post(url_streams, data=encoded_payload, headers=headers)
 
     # post status of post request
     print(r.status_code)

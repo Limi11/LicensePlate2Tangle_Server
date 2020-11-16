@@ -1,4 +1,4 @@
-# global container with parking meter objects
+# here we define global variables and objects  
 
 from container import Container
 from threading import Event

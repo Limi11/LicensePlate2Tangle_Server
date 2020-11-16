@@ -1,6 +1,6 @@
 
 # this is the thread function that sends periodically (every 10 s) streams data to the iota tangele
-
+ 
 
 # **********includes*********** #
 
@@ -35,19 +35,16 @@ def streams():
         # get sensordata as json string
         data = pm.get_sensordata()
 
+        # this is an example payload for the streams gateway
+        # payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
+
+        # build 
         payload = "{\"iot2tangle\": " + data + "," + "\"device\": \"DEVICE_ID_1\", \"timestamp\": 1558511111 }"
 
-        print(payload)
-
+        # string to json conerstion
         payload = json.loads(payload)
 
-       
-
-
-        # this is the payload that things network will send
-        #payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
-
-        #print(payload)
+        print(payload)
 
         client.streams_client(payload)
 

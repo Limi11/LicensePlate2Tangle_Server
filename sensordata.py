@@ -19,6 +19,7 @@ import server
 # sensordata function is a thread in gateway.py
 def sensordata():
     print("Start sensordata thread...")
+    
     while True:
         ## start listening for data
         server.listen()

@@ -1,5 +1,7 @@
 # this is the parkingmeter class wich defines digital twins of the physical parking meters
 
+import time 
+import os
 
 class ParkingMeter(object):
 
@@ -9,6 +11,9 @@ class ParkingMeter(object):
     __location = ""
     __iotaaddress = ""
     __ttnurl = ""
+
+    # unix timestamp of sensordata
+    __timestamp = 0
 
     # temperature
     __temp = 0.0
@@ -36,8 +41,12 @@ class ParkingMeter(object):
 
     # method to return sensordata in json streams format
     def get_sensordata(self):
-        sdata = "[ {\"sensor\": \"Temperature\", \"data\":" + str(self.__temp) + "}, { \"sensor\": \"Humidity\", \"data\":" + str(self.__hum) + "}, {\"sensor\": \"Pressure\", \"data\":" +  str(self.__pres) + "}, {\"information\": \"Status\", \"data\":\"" + str(self.__stat) + "\"}]"
+        sdata = "[ { \"sensor\": \"Temperature\", \"data\": [{ \"temp\": \"" + str(self.__temp) + "\"}]}, { \"sensor\": \"Humidity\", \"data\": [{ \"hum\": \"" + str(self.__hum) + "\"}]}, { \"sensor\": \"Pressure\", \"data\": [{ \"pres\": \"" +  str(self.__pres) + "\"}]}, { \"sensor\": \"Status\", \"data\": [{ \"stat\": \"" + str(self.__stat) + "\"}]}]"
         return sdata
+
+    # get timestamp of sensordata 
+    def get_unixtimestamp(self):
+        return self.__timestamp
 
     # method to get uplink url from ttn
     def get_url(self, ttnurl):
@@ -46,13 +55,24 @@ class ParkingMeter(object):
     def get_bookings(self):
         print("get bookings")
 
-  # method to set sensor values out http post sensor dict
+    # method to set sensor values out http post sensor dict
     def set_sensordata(self,data):
         self.__data = data
         self.__temp = data.get("t")
         self.__hum = data.get("h")
         self.__pres = data.get("p")
         self.__stat = data.get("s")
+
+    # method to set unix timestamp of sensordata
+    def set_unixtimestamp(self, data):
+        os.environ["TZ"] = "Germany/Berlin"
+        time.tzset()
+        #1970-01-01T00:00:00Z
+        the_time = time.strptime(data,"%Y-%m-%dT%H:%M:%SZ")
+        time.strftime("%Y-%m-%d %H:%M:%S %Z %z", the_time) 
+        time.mktime(the_time)
+        self.__timestamp = the_time
+        print(the_time)
 
     # method to set downlink url of tth
     def set_downlink(self,ttnurl):

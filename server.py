@@ -41,46 +41,8 @@ class Server(BaseHTTPRequestHandler):
       # read content with length
       post_body = self.rfile.read(content_len)
 
-      # decode message to utf-8 format
-      spost_body = post_body.decode("utf-8")
-
-      # json loads makes a dictionary out of json string
-      jdic = json.loads(spost_body)
-
-      # extract payload out of data
-      payload = jdic.get("payload_raw")
-
-      # decode payload from base64 format
-      encoded_payload = base64.b64decode(payload)
-      
-      # decode message to utf-8 format
-      encoded_payload = encoded_payload.decode("utf-8")
-
-      print(encoded_payload)
-
-      # json loads makes a dictionary out of json string
-      encoded_payload = json.loads(encoded_payload)
-
-      # extract ID out of payload_field
-      uid = jdic.get("dev_id")
-
-      # extract "downlink_url"
-      downlink = jdic.get("downlink_url") 
-
-      # lock thread during access of global container
-      mutex.acquire()
-
-      # search for parkingmeter with id
-      pmobj = globals.container.get_element_by_id(uid)
-
-      # set sensordata in parkingmeter object with id
-      pmobj.set_sensordata(encoded_payload)
-
-      # set ttnurl 
-      pmobj.set_downlink(downlink)
-
-      # release thread after access of global container
-      mutex.release()
+      # copie content into parking meter object
+      post_to_object(post_body)
 
       # set event for receiving data
       globals.receive_data.set()
@@ -110,6 +72,55 @@ def listen():
     print(time.asctime(), 'Server DOWN - %s:%s' % (HOST_NAME, PORT_NUMBER))
 
 
+# this function reads the data from post request into our license plate objekt
+# some steps will be outsourced in mehtods of class parkingmeter in future !
+def post_to_object(data):
+    # decode message to utf-8 format
+      spost_body = data.decode("utf-8")
+
+      # json loads makes a dictionary out of json string
+      jdic = json.loads(spost_body)
+
+      # extract payload out of data
+      payload = jdic.get("payload_raw")
+
+      # decode payload from base64 format
+      decoded_payload = base64.b64decode(payload)
+      
+      # decode message to utf-8 format
+      decoded_payload = decoded_payload.decode("utf-8")
+
+      #print(decoded_payload)
+
+      # json loads makes a dictionary out of json string
+      decoded_payload = json.loads(decoded_payload)
+
+      # extract ID out of payload_field
+      uid = jdic.get("dev_id")
+
+      # extract "downlink_url"
+      downlink = jdic.get("downlink_url") 
+
+      # get timestamp of sensordata
+      timestamp = jdic.get("metadata").get("time")
+
+      # lock thread during access of global container
+      mutex.acquire()
+
+      # search for parkingmeter with id
+      pmobj = globals.container.get_element_by_id(uid)
+
+      # set sensordata in parkingmeter object with id
+      pmobj.set_sensordata(decoded_payload)
+
+      # set ttnurl 
+      pmobj.set_downlink(downlink)
+
+      # convert into unix timestemp and set timestamp in parkinmeter wiht id  
+      pmobj.set_unixtimestamp(timestamp)
+
+      # release thread after access of global container
+      mutex.release()
 
 
 
