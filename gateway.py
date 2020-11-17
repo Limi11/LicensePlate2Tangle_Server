@@ -32,7 +32,7 @@ globals.container_init()
 globals.event_init()
 
 # get init file data and build our parkingmeters container
-with open("/home/milli/LicensePlate2Tangle/init.txt") as json_file:
+with open("/home/milli/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
     data = json.load(json_file)
     for p in data["ParkingMeters"]:
         parkingmeter = ParkingMeter(p["ID"],1234,"Free",p["Location"],booking.newaddress())

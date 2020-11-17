@@ -78,6 +78,8 @@ class ParkingMeter(object):
     def set_downlink(self,ttnurl):
         self.__ttnurl = ttnurl 
 
+    # method to set iota address
+    #def set_iota_address(self):
 
     def set_bookings(self):
         print("set bookings")
@@ -95,7 +97,7 @@ class ParkingMeter(object):
         print("give parking data as json back")
 
     def get_address(self):
-        print(self.__iotaaddress)
+        return self.__iotaaddress
 
     def print(self):
         print(self.__id)

@@ -17,6 +17,15 @@ class Container(object):
     def add(self, ParkingMeter):
         self.__items.append(ParkingMeter)
 
+    # get number of parkinmeters
+    def get_container_size(self):
+        size = len(self.__items)
+        return size
+    
+    # get an parkinmeter by index
+    def get_element_by_index(self, index):
+        return self.__items[index]  
+
     # get an parkingmeter object by ID number
     def get_element_by_id(self, ID):
         self.__last_update_id = ID
@@ -24,9 +33,12 @@ class Container(object):
             if self.__items[i].get_id() == ID:
                 return self.__items[i]
         return "ID is not registered!"
-
+    
     def get_last_update_id(self):
         return self.__last_update_id
+
+    def get_all_elements(self):
+        return self.__items
 
    
 
