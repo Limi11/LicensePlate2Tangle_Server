@@ -34,8 +34,20 @@ class Container(object):
                 return self.__items[i]
         return "ID is not registered!"
     
+    # return the id of license plate that gets the last update
     def get_last_update_id(self):
         return self.__last_update_id
+
+    # this function gives a list of all used iota adresses back
+    def get_iota_adress_list(self):
+        addresses = []
+        for i in range(len(self.__items)):
+            # get parkingmeter object
+            licenseplate = self.get_element_by_index(i)
+            # get iota address of parkingmeter
+            address = licenseplate.get_address()
+            addresses.append(address)
+        return addresses
 
     def get_all_elements(self):
         return self.__items

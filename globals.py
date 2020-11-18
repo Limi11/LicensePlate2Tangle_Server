@@ -11,3 +11,7 @@ def container_init():
 def event_init():
     global receive_data
     receive_data = Event()
+
+def addrees_index_init():
+    global address_index
+    address_index = 0

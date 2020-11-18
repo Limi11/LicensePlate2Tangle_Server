@@ -79,7 +79,8 @@ class ParkingMeter(object):
         self.__ttnurl = ttnurl 
 
     # method to set iota address
-    #def set_iota_address(self):
+    def set_iota_address(self, address):
+        self.__iotaaddress = address
 
     def set_bookings(self):
         print("set bookings")

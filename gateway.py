@@ -30,6 +30,7 @@ from threading import Thread
 
 globals.container_init()
 globals.event_init()
+globals.addrees_index_init()
 
 # get init file data and build our parkingmeters container
 with open("/home/milli/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
