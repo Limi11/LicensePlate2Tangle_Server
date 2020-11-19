@@ -11,6 +11,8 @@ class ParkingMeter(object):
     __location = ""
     __iotaaddress = ""
     __ttnurl = ""
+    __balance = 0
+    __bookings = []
 
     # unix timestamp of sensordata
     __timestamp = 0
@@ -82,8 +84,23 @@ class ParkingMeter(object):
     def set_iota_address(self, address):
         self.__iotaaddress = address
 
-    def set_bookings(self):
-        print("set bookings")
+    # method to set balance of iota address
+    def set_balance(self, balance):
+        self.__balance = balance
+
+    # set a new booking with license number start and endtime 
+    def set_booking(self, data):
+        # parkdauer berechnen aktuell statisch 10Miota/h
+        seconds = self.__balance/1000000*60*60
+        # get license out of data
+        license = data.get("lic")
+        # get stime out of data
+        stime = data.get("ts")
+        # calculate endtime stime unixtime + seconds
+        etime = data.get("") + seconds
+        self.__bookings.append({"lic":license,"ts":stime,"te":etime})
+        print("New booking:" + str(self.__bookings[-1]))
+
 
     def delete_booking(self):
         print("delete bookings")

@@ -52,6 +52,11 @@ class Container(object):
     def get_all_elements(self):
         return self.__items
 
+    # this method gives the license plates address balances
+    def set_balances(self, payments):
+        for i in range(len(self.__items)):
+            self.__items[i].set_balance(payments[i])
+
    
 
 
