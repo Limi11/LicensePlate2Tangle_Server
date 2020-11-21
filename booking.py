@@ -52,20 +52,25 @@ def newaddress():
 # this function validates the json message
 def validateJson(jsonData):
     try:
-        validate(instance=jsonData, schema=message)
-    except jsonschema.exceptions.ValidationError as err:
-        return False
-    return True
+        a_json = json.loads(jsonData)
+        try: 
+            validate(instance=a_json, schema=message)
+            return True
+        except:
+            print("Json message does not fit with requirements!")
+    except:
+	    print("String could not be converted to JSON")
+    return False
 
 # define thread function
 def booking():
     while(True):
 
         # check the balances all 4 seconds is enough
-        time.sleep(4)
+        time.sleep(5)
 
         # get a list of all license plates in the container
-        # elements = globals.container.get_all_elements()
+        elements = globals.container.get_all_elements()
         
         # get a list of the iota adresses of the license plates 
         # list has the same order as license plate index
@@ -82,44 +87,54 @@ def booking():
 
         # init list of addresses that received a transaction
         tx = []
+
+        # variable to remember index of elements that received a transaction
+        re = []
             
         # first, get a list of addresses that received money "output transactions"
         for i in range(len(addresses)):
+            print(addresses[i])
             if balances.get("balances")[i]>0:
                 # get back the transaction object of address i from tangle
-                print(addresses[i])
                 tx.append(addresses[i]) 
+                re.append(i)
+              
 
+        
         # second, ask node for transaction objects (list) that we have filtered out
-        print(tx) 
-        respond = api.find_transaction_objects(tx)
-        print(respond)
-        print(respond.get("transactions"))
+        respond = api.find_transaction_objects(addresses = tx)
+        #print(respond)
+      
 
+        # variable to check itteration of following for loop
+        iteration = 0
 
         # third, check all responds for validity and save data
         for i in respond.get("transactions"):
             if i is None:
                 print('(Failure: Transaction without booking!)')
             else:
-                # print(i) # debug
-                for o in i["transactions"]:
-                        data = o.signature_message_fragment.decode(errors='ignore')
-                        #print(data)
-                        if(validateJson(data)):
-                            "There is a valid transaction"
-                            # convert string to dic
-                            data = json.loads(data)
-                            uid = data.get("uid")
-                            element = globals.container.get_element_by_id(uid)
+                data = i.signature_message_fragment.decode(errors='ignore')
+                if(validateJson(data)):
+                        data = json.loads(data)
+                        print("There is a valid transaction")
+                        uid = data.get("uid")
+                        element = globals.container.get_element_by_id(uid)
+                        if element is not str:
                             element.set_booking(data)
-                        else: 
-                            "The transaction is not valid!"
-                        print(data)
+                        else:
+                            print(element)
+                else: 
+                    print("The transaction is not valid!")
             
-
-
-
+            # if there was a value transaction we need a new address
+            x = newaddress()
+            # iteration does not know which elements got a transaction
+            # we have saved the index of elements that received a payment 
+            # in re[]
+            y = re[iteration]
+            elements[y].set_iota_address(x)
+            iteration =+ 1
 
 
 

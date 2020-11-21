@@ -19,7 +19,7 @@ headers = {'content-type': 'application/json', 'Accept': 'text/plain'}
 # this is the payload that things network will send
 payload = {
   "app_id": "my-app-id",
-  "dev_id": "PM1",
+  "dev_id": "E24F43FFFE44C3FC",
   "hardware_serial": "0102030405060708",
   "port": 1,
   "counter": 2,

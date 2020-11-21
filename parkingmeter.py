@@ -29,6 +29,9 @@ class ParkingMeter(object):
     # json data from device
     __data = ""
 
+    # data for streams
+    __sdata = [ { "sensor": "Temperature", "data": [{ "temp": ""}]}, { "sensor": "Humidity", "data": [{ "hum": ""}]}, { "sensor": "Pressure", "data": [{"pres":""}]}, { "sensor": "Status", "data": [{ "stat": ""}]}]
+    
     # consturctor 
     def __init__(self,id,channelid,license,location,iotaaddress):
         self.__id = id
@@ -42,8 +45,8 @@ class ParkingMeter(object):
         return str(self.__id) 
 
     # method to return sensordata in json streams format
-    def get_sensordata(self):
-        sdata = "[ { \"sensor\": \"Temperature\", \"data\": [{ \"temp\": \"" + str(self.__temp) + "\"}]}, { \"sensor\": \"Humidity\", \"data\": [{ \"hum\": \"" + str(self.__hum) + "\"}]}, { \"sensor\": \"Pressure\", \"data\": [{ \"pres\": \"" +  str(self.__pres) + "\"}]}, { \"sensor\": \"Status\", \"data\": [{ \"stat\": \"" + str(self.__stat) + "\"}]}]"
+    def get_streamsdata(self):
+        sdata = "[{ \"sensor\": \"Temperature\", \"data\": [{ \"temp\": \"" + str(self.__temp) + "\"}]}, { \"sensor\": \"Humidity\", \"data\": [{ \"hum\": \"" + str(self.__hum) + "\"}]}, { \"sensor\": \"Pressure\", \"data\": [{ \"pres\": \"" +  str(self.__pres) + "\"}]}, { \"sensor\": \"Status\", \"data\": [{ \"stat\": \"" + str(self.__stat) + "\"}]}]"
         return sdata
 
     # get timestamp of sensordata 
@@ -91,13 +94,13 @@ class ParkingMeter(object):
     # set a new booking with license number start and endtime 
     def set_booking(self, data):
         # parkdauer berechnen aktuell statisch 10Miota/h
-        seconds = self.__balance/1000000*60*60
+        seconds = int(self.__balance/1000000*60*60)
         # get license out of data
         license = data.get("lic")
         # get stime out of data
         stime = data.get("ts")
         # calculate endtime stime unixtime + seconds
-        etime = data.get("") + seconds
+        etime = stime + seconds
         self.__bookings.append({"lic":license,"ts":stime,"te":etime})
         print("New booking:" + str(self.__bookings[-1]))
 

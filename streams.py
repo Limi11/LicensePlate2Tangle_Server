@@ -15,6 +15,8 @@ from container import Container
 from parkingmeter import ParkingMeter
 
 
+# this is an example payload for the streams gateway
+# payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
 
 
 def streams():
@@ -33,10 +35,7 @@ def streams():
         pm = globals.container.get_element_by_id(id)
 
         # get sensordata as json string
-        data = pm.get_sensordata()
-
-        # this is an example payload for the streams gateway
-        # payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
+        data = pm.get_streamsdata()
 
         # build 
         payload = "{\"iot2tangle\": " + data + "," + "\"device\": \"DEVICE_ID_1\", \"timestamp\": 1558511111 }"

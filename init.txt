@@ -1,5 +1,5 @@
 
 {"ParkingMeters":[
-    {"ID":"PM1","Location":"48.9667,9.1333"},
+    {"ID":"E24F43FFFE44C3FC","Location":"48.9667,9.1333"},
     {"ID":"PM2","Location":"48.9385144,8.955217"}
 ]}
