@@ -2,6 +2,7 @@
 
 from container import Container
 from threading import Event
+from threading import Thread, Lock, Event
 
 
 def container_init():
@@ -15,3 +16,9 @@ def event_init():
 def addrees_index_init():
     global address_index
     address_index = 0
+
+def mutex():
+    global mutex
+    # create mutex to be threadsafe
+    mutex = Lock()
+

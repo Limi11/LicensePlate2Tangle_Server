@@ -1,7 +1,12 @@
 # this is the parkingmeter class wich defines digital twins of the physical parking meters
 
+# **********includes*********** #
+
+# include libraries
 import time 
+import datetime
 import os
+import json
 
 class ParkingMeter(object):
 
@@ -13,6 +18,9 @@ class ParkingMeter(object):
     __ttnurl = ""
     __balance = 0
     __bookings = []
+    __nextbooking = {'lic':'', 'ts': 0, 'te': 0}
+    __reserved = False
+    __occupied = False
 
     # unix timestamp of sensordata
     __timestamp = 0
@@ -30,7 +38,12 @@ class ParkingMeter(object):
     __data = ""
 
     # data for streams
-    __sdata = [ { "sensor": "Temperature", "data": [{ "temp": ""}]}, { "sensor": "Humidity", "data": [{ "hum": ""}]}, { "sensor": "Pressure", "data": [{"pres":""}]}, { "sensor": "Status", "data": [{ "stat": ""}]}]
+    __sdata = [{ "sensor": "Temperature", 
+    "data": [{ "temp": ""}]}, { "sensor": "Humidity", 
+    "data": [{ "hum": ""}]}, { "sensor": "Pressure", 
+    "data": [{"pres":""}]}, { "sensor": "Status", 
+    "data": [{ "stat": ""}]},{ "sensor": "Bookings", 
+    "data": [{ "book": []}]} ]
     
     # consturctor 
     def __init__(self,id,channelid,license,location,iotaaddress):
@@ -46,19 +59,37 @@ class ParkingMeter(object):
 
     # method to return sensordata in json streams format
     def get_streamsdata(self):
-        sdata = "[{ \"sensor\": \"Temperature\", \"data\": [{ \"temp\": \"" + str(self.__temp) + "\"}]}, { \"sensor\": \"Humidity\", \"data\": [{ \"hum\": \"" + str(self.__hum) + "\"}]}, { \"sensor\": \"Pressure\", \"data\": [{ \"pres\": \"" +  str(self.__pres) + "\"}]}, { \"sensor\": \"Status\", \"data\": [{ \"stat\": \"" + str(self.__stat) + "\"}]}]"
-        return sdata
+        self.__sdata[0]["data"][0]["temp"] = str(self.__temp)
+        self.__sdata[0]["data"][0]["hum"] = str(self.__hum)
+        self.__sdata[0]["data"][0]["pres"] = str(self.__pres)
+        self.__sdata[0]["data"][0]["stat"] = str(self.__stat)
+        self.__sdata[0]["data"][0]["book"] = str(self.__bookings)
+        x = json.dumps(self.__sdata[0])
+        return x
 
     # get timestamp of sensordata 
     def get_unixtimestamp(self):
         return self.__timestamp
 
     # method to get uplink url from ttn
-    def get_url(self, ttnurl):
+    def get_url(self):
         return self.__ttnurl
-  
-    def get_bookings(self):
-        print("get bookings")
+
+    # set the next booking time
+    def get_next_booking(self):
+        return self.__nextbooking
+
+    # get iota address
+    def get_address(self):
+        return self.__iotaaddress
+    
+    # set the next booking time
+    def set_next_booking(self):
+        x = self.__bookings[0]["ts"]
+        for i in range(len(self.__bookings)-1):
+            if x < self.__bookings[i+1]["ts"]:
+                x = self.__bookings[i+1]
+        self.__nextbooking = x
 
     # method to set sensor values out http post sensor dict
     def set_sensordata(self,data):
@@ -70,14 +101,14 @@ class ParkingMeter(object):
 
     # method to set unix timestamp of sensordata
     def set_unixtimestamp(self, data):
-        os.environ["TZ"] = "Germany/Berlin"
-        time.tzset()
+        #time.tzset()
         #1970-01-01T00:00:00Z
-        the_time = time.strptime(data,"%Y-%m-%dT%H:%M:%SZ")
-        time.strftime("%Y-%m-%d %H:%M:%S %Z %z", the_time) 
-        time.mktime(the_time)
-        self.__timestamp = the_time
-        print(the_time)
+        #the_time = time.strptime(data,"%Y-%m-%dT%H:%M:%SZ")
+        #time.strftime("%Y-%m-%d %H:%M:%S %Z %z", the_time) 
+        #time.mktime(the_time)
+        the_time = datetime.datetime.strptime(data, "%Y-%m-%dT%H:%M:%SZ").timestamp()
+        self.__timestamp = int(the_time)
+        print(str(self.__timestamp))
 
     # method to set downlink url of tth
     def set_downlink(self,ttnurl):
@@ -104,26 +135,34 @@ class ParkingMeter(object):
         self.__bookings.append({"lic":license,"ts":stime,"te":etime})
         print("New booking:" + str(self.__bookings[-1]))
 
-
-    def delete_booking(self):
-        print("delete bookings")
-
-    def set_payment(self):
-        print("set payment")
-
-    def parking_json(self):
-        print("give sensor data as json back")
-
-    def sensor_json(self):
-        print("give parking data as json back")
-
-    def get_address(self):
-        return self.__iotaaddress
+    def check_booking(self):
+        temp1 = self.__bookings
+        temp2 = False
+        for i in self.__bookings:
+            x = int(time.time())
+            if i["ts"] < x:
+                if i["te"] > x:
+                    temp2 = True
+                else:
+                    temp1.remove(i)
+                    print("Time is over, booking deleted!")
+        if temp2 == True:
+            self.__reserved = True
+        else:
+            self.__reserved = False
+        self.__bookings = temp1
+        return self.__reserved
 
     def print(self):
         print(self.__id)
         print(self.__channelid) 
         print(self.__iotaaddress)
+
+
+
+
+
+   
 
     
 

@@ -37,8 +37,16 @@ def streams():
         # get sensordata as json string
         data = pm.get_streamsdata()
 
+        # get timestemp from sensordata
+        timestamp = pm.get_unixtimestamp()
+
+        # get device id
+        devid = pm.get_id()
+
         # build 
-        payload = "{\"iot2tangle\": " + data + "," + "\"device\": \"DEVICE_ID_1\", \"timestamp\": 1558511111 }"
+        payload = "{\"iot2tangle\": [" + data + "] ," + "\"device\": \"" + str(devid) + "\", \"timestamp\": \"" + str(timestamp) + "\" }"
+
+        print(payload)
 
         # string to json conerstion
         payload = json.loads(payload)

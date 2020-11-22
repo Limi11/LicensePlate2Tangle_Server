@@ -21,6 +21,7 @@ from iota import Iota, Address
 from iota.codecs import TrytesDecodeError
 from iota import TryteString
 from jsonschema import validate
+from threading import Thread, Lock, Event
 
 
 # ********initialization********* #
@@ -69,6 +70,9 @@ def booking():
         # check the balances all 4 seconds is enough
         time.sleep(5)
 
+        # lock thread during access of global container
+        globals.mutex.acquire()
+
         # get a list of all license plates in the container
         elements = globals.container.get_all_elements()
         
@@ -76,14 +80,23 @@ def booking():
         # list has the same order as license plate index
         addresses = globals.container.get_iota_adress_list()
 
+        # release thread after access of global container
+        globals.mutex.release()
+
         #print(addresses[0]) # debug
         #print(addresses[1]) # debug
 
         # check balance of all addresses in the list
         balances = api.get_balances(addresses, None)
 
+        # lock thread during access of global container
+        globals.mutex.acquire()
+        
         # set address balance attribute of all license plate elements 
         globals.container.set_balances(balances.get("balances"))
+
+        # release thread after access of global container
+        globals.mutex.release()
 
         # init list of addresses that received a transaction
         tx = []
@@ -109,6 +122,9 @@ def booking():
         # variable to check itteration of following for loop
         iteration = 0
 
+        # lock thread during access of global container
+        globals.mutex.acquire()
+
         # third, check all responds for validity and save data
         for i in respond.get("transactions"):
             if i is None:
@@ -122,6 +138,7 @@ def booking():
                         element = globals.container.get_element_by_id(uid)
                         if element is not str:
                             element.set_booking(data)
+                            element.set_next_booking()
                         else:
                             print(element)
                 else: 
@@ -135,6 +152,9 @@ def booking():
             y = re[iteration]
             elements[y].set_iota_address(x)
             iteration =+ 1
+          
+        # release thread after access of global container
+        globals.mutex.release()
 
 
 

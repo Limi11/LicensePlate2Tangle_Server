@@ -22,9 +22,6 @@ from threading import Thread, Lock, Event
 HOST_NAME = '127.0.0.1'
 PORT_NUMBER = 65432
 
-# create mutex to be threadsafe
-mutex = Lock()
-
 # at the moment we only need post since TTN sends POSTs to the server
 class Server(BaseHTTPRequestHandler):
 
@@ -94,6 +91,9 @@ def post_to_object(data):
       # json loads makes a dictionary out of json string
       decoded_payload = json.loads(decoded_payload)
 
+      # lock thread during access of global container
+      globals.mutex.acquire()
+
       # extract ID out of payload_field
       uid = jdic.get("dev_id")
 
@@ -102,9 +102,6 @@ def post_to_object(data):
 
       # get timestamp of sensordata
       timestamp = jdic.get("metadata").get("time")
-
-      # lock thread during access of global container
-      mutex.acquire()
 
       # search for parkingmeter with id
       pmobj = globals.container.get_element_by_id(uid)
@@ -119,7 +116,7 @@ def post_to_object(data):
       pmobj.set_unixtimestamp(timestamp)
 
       # release thread after access of global container
-      mutex.release()
+      globals.mutex.release()
 
 
 

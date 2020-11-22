@@ -13,6 +13,7 @@ import qrcode
 import streams
 import sensordata
 import globals
+import subprocess
 
 
 # include classes 
@@ -31,6 +32,7 @@ from threading import Thread
 globals.container_init()
 globals.event_init()
 globals.addrees_index_init()
+globals.mutex()
 
 # get init file data and build our parkingmeters container
 with open("/home/milli/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
@@ -40,10 +42,13 @@ with open("/home/milli/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.tx
         globals.container.add(parkingmeter)
 
 # now we need to get the reservation informations back from tangle
+# ... this will be done with keepy in future
 
-# start streams gateway read back channel ID and save information into init.txt
-# ...
-
+# the keepy and streams-http-gateway folders must be in the project folder!
+# start http streams gateway
+subprocess.call("gnome-terminal --command=\"cargo run --release\"" , cwd="Streams-http-gateway", shell=True)
+# start keepy 
+subprocess.call("gnome-terminal --command=\"node keepy.js\"" , cwd="Keepy", shell=True)
 
 # **********functions*********** #
 # here only short functions are defined

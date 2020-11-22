@@ -12,6 +12,7 @@ import base64
 # include classes
 
 
+# **********functions*********** #
 
 # this is the function for sending data over keepy to streams http gateway to tangle
 def streams_client(data):
