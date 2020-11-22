@@ -30,7 +30,8 @@ from threading import Thread, Lock, Event
 wallet = Wallet()
 
 # generate a new seed, only for Prototype, there must be a static defined seed in future 
-seed = wallet.get_seed()
+# seed = wallet.get_seed()
+seed = "PIHMZQL99FHJMVJROYYTRWVHFSRZGZMP9AAAREEACRZUCYTBEQ9NDQYKTNYPUCTEQ99AOSYAQQHCVZQWH"
 
 # set security level
 security_level = 2
@@ -134,9 +135,11 @@ def booking():
                 if(validateJson(data)):
                         data = json.loads(data)
                         print("There is a valid transaction")
+                        print(data)
                         uid = data.get("uid")
                         element = globals.container.get_element_by_id(uid)
                         if element is not str:
+                            print(element)
                             element.set_booking(data)
                             element.set_next_booking()
                         else:
