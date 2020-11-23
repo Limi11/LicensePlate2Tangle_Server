@@ -60,10 +60,14 @@ payload = {
 payload = json.dumps(payload)
 
 # make a post request to the gateway
-r = requests.post(url, data=payload, headers=headers)
+#r = requests.post(url, data=payload, headers=headers)
+
+# make a get request to the gateway
+r = requests.get(url, params={"uid":"E24F43FFFE44C3FC"})
 
 # post status of post request
-print(r.status_code)
+# text = r.text.decode("tf-8")
+print(r.text)
 
 #print(r)
 

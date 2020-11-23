@@ -17,6 +17,7 @@ from parkingmeter import ParkingMeter
 from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from threading import Thread, Lock, Event
+from urllib.parse import urlparse
 
 # server data
 HOST_NAME = '127.0.0.1'
@@ -44,15 +45,43 @@ class Server(BaseHTTPRequestHandler):
       # set event for receiving data
       globals.receive_data.set()
 
+      # we need this function to confirm that the request was successful 
+      self.end_headers
+
       return
 
   def do_GET(self):
+      # check length of post content
+      query = urlparse(self.path).query
+      query_components = dict(qc.split("=") for qc in query.split("&"))
+      uid = query_components["uid"]
+
+      #print(uid)
+
+      # search object with udi
+      pm = globals.container.get_element_by_id(uid)
+
+      # get iota address of uid
+      address = pm.get_address()
+
+      #address = bytes(str(address), 'utf-8')
+    
+      self.send_response(200)
+
+      self.send_header("Content-type", "text")
+
+      self.end_headers()
+
+      self.wfile.write(str(address).encode())
+      
       return
 
   def handle_http(self):
+
       return
 
   def respond(self):
+
       return
 
 
