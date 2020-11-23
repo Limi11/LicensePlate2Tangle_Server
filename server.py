@@ -1,4 +1,6 @@
 
+
+
 # this is the http server code for communication with the things network or a raspberry pi gateway 
 
 # **********includes*********** #
@@ -18,9 +20,10 @@ from http.server import BaseHTTPRequestHandler
 from http.server import HTTPServer
 from threading import Thread, Lock, Event
 from urllib.parse import urlparse
+from iota import Address
 
 # server data
-HOST_NAME = '127.0.0.1'
+HOST_NAME = '0.0.0.0'
 PORT_NUMBER = 65432
 
 # at the moment we only need post since TTN sends POSTs to the server
@@ -42,6 +45,8 @@ class Server(BaseHTTPRequestHandler):
       # copie content into parking meter object
       post_to_object(post_body)
 
+      print(post_body)
+
       # set event for receiving data
       globals.receive_data.set()
 
@@ -51,28 +56,38 @@ class Server(BaseHTTPRequestHandler):
       return
 
   def do_GET(self):
-      # check length of post content
-      query = urlparse(self.path).query
-      query_components = dict(qc.split("=") for qc in query.split("&"))
-      uid = query_components["uid"]
 
+      self.send_response(200)
+
+      # check length of post content
+      #query = urlparse(self.path).query
+      #query_components = dict(qc.split("=") for qc in query.split("&"))
+      #uid = query_components["uid"]
+      b = self.headers
+      # a = self.path_headers()
+      a = self.path
+      self.end_headers()
+      print(a)
+      print(b)
       #print(uid)
 
       # search object with udi
-      pm = globals.container.get_element_by_id(uid)
+      pm = globals.container.get_element_by_id("E24F43FFFE44C3FC")
 
       # get iota address of uid
       address = pm.get_address()
 
-      #address = bytes(str(address), 'utf-8')
-    
-      self.send_response(200)
+      address_with_checksum = address.with_valid_checksum()
 
-      self.send_header("Content-type", "text")
+      address_with_checksum = str(address_with_checksum)
 
-      self.end_headers()
+      #self.send_header("Content-type", "text")
 
-      self.wfile.write(str(address).encode())
+      #self.end_headers()
+
+      x = {"Adr":address_with_checksum,"Tim":300}
+
+      self.wfile.write(str(x).encode())
       
       return
 
@@ -115,7 +130,7 @@ def post_to_object(data):
       # decode message to utf-8 format
       decoded_payload = decoded_payload.decode("utf-8")
 
-      #print(decoded_payload)
+      print(decoded_payload)
 
       # json loads makes a dictionary out of json string
       decoded_payload = json.loads(decoded_payload)
@@ -124,13 +139,14 @@ def post_to_object(data):
       globals.mutex.acquire()
 
       # extract ID out of payload_field
-      uid = jdic.get("dev_id")
+      uid = jdic.get("hardware_serial")
 
       # extract "downlink_url"
       downlink = jdic.get("downlink_url") 
 
       # get timestamp of sensordata
-      timestamp = jdic.get("metadata").get("time")
+      #timestamp = jdic.get("metadata").get("time")
+      timestamp="2020-11-23T23:13:26Z"
 
       # search for parkingmeter with id
       pmobj = globals.container.get_element_by_id(uid)

@@ -31,7 +31,7 @@ wallet = Wallet()
 
 # generate a new seed, only for Prototype, there must be a static defined seed in future 
 # seed = wallet.get_seed()
-seed = "PIHMZQL99FHJMVJROYYTRWVHFSRZGZMP9AAAREEACRZUCYTBEQ9NDQYKTNYPUCTEQ99AOSYAQQHCVZQWH"
+seed = "PIRMZQL99FHJMVJROYYTRWVHFSRZGZMP9AAAREEACRZUCYTBEQ9NDQYKTNYPUCTEQ99AOSYAQQHCVZQWH"
 
 # set security level
 security_level = 2

@@ -35,7 +35,7 @@ globals.addrees_index_init()
 globals.mutex()
 
 # get init file data and build our parkingmeters container
-with open("/home/milli/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
+with open("/home/ubuntu/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
     data = json.load(json_file)
     for p in data["ParkingMeters"]:
         parkingmeter = ParkingMeter(p["ID"],1234,"Free",p["Location"],booking.newaddress())
