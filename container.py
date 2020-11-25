@@ -36,7 +36,7 @@ class Container(object):
         for i in range(len(self.__items)):
             if self.__items[i].get_id() == ID:
                 return self.__items[i]
-        return "ID is not registered!"
+        return None
     
     # return the id of license plate that gets the last update
     def get_last_update_id(self):

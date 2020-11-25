@@ -1,7 +1,4 @@
-
-
-
-# this is the http server code for communication with the things network or a raspberry pi gateway 
+#  This is the http server function which can get post messagen from TTN network or get messages from mobile app
 
 # **********includes*********** #
 
@@ -9,8 +6,8 @@
 import json
 import requests
 import time
-import globals
 import base64
+import globals
 
 
 # include classes
@@ -22,9 +19,6 @@ from threading import Thread, Lock, Event
 from urllib.parse import urlparse
 from iota import Address
 
-# server data
-HOST_NAME = '0.0.0.0'
-PORT_NUMBER = 65432
 
 # at the moment we only need post since TTN sends POSTs to the server
 class Server(BaseHTTPRequestHandler):
@@ -59,35 +53,53 @@ class Server(BaseHTTPRequestHandler):
 
       self.send_response(200)
 
-      # check length of post content
-      #query = urlparse(self.path).query
-      #query_components = dict(qc.split("=") for qc in query.split("&"))
-      #uid = query_components["uid"]
-      b = self.headers
-      # a = self.path_headers()
-      a = self.path
+      # we don't need the header
+      # header = self.headers
+      
+      # the uid is in the path
+      path = self.path
+      
       self.end_headers()
-      print(a)
-      print(b)
-      #print(uid)
+
+      path = str(path)
+
+      uid = path[5:]
+      
+      #print("This is the header: " + str(header))
+      print("New GET request from udi: " + uid)
 
       # search object with udi
-      pm = globals.container.get_element_by_id("E24F43FFFE44C3FC")
+      try:
+          pm = globals.container.get_element_by_id(uid)
+      except:
+          print("Uid from GET request is not registered!")
+          pass
+    
 
       # get iota address of uid
       address = pm.get_address()
 
+      # android app needs an address with checksum
       address_with_checksum = address.with_valid_checksum()
 
+      # convert address to string
       address_with_checksum = str(address_with_checksum)
 
-      #self.send_header("Content-type", "text")
+      # get next booking 
+      nextbooking = pm.get_next_booking_end()
 
-      #self.end_headers()
+      print(nextbooking)
 
-      x = {"Adr":address_with_checksum,"Tim":300}
+      # calculate allowed parking time
+      parking_time = nextbooking - int(time.time())
 
-      self.wfile.write(str(x).encode())
+      print(str(parking_time))
+
+      sdata = {"Adr":address_with_checksum,"Tim":parking_time}
+
+      print(sdata)
+
+      self.wfile.write(str(sdata).encode())
       
       return
 
@@ -102,14 +114,14 @@ class Server(BaseHTTPRequestHandler):
 
 # this is the server function for listening to http requests
 def listen():
-    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), Server)
-    print(time.asctime(), 'Server UP - %s:%s' % (HOST_NAME, PORT_NUMBER))
+    httpd = HTTPServer((globals.hostip, globals.port), Server)
+    print(time.asctime(), 'Server UP - %s:%s' % (globals.hostip, globals.port))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     httpd.server_close()
-    print(time.asctime(), 'Server DOWN - %s:%s' % (HOST_NAME, PORT_NUMBER))
+    print(time.asctime(), 'Server DOWN - %s:%s' % (globals.hostip, globals.port))
 
 
 # this function reads the data from post request into our license plate objekt
@@ -145,8 +157,11 @@ def post_to_object(data):
       downlink = jdic.get("downlink_url") 
 
       # get timestamp of sensordata
-      #timestamp = jdic.get("metadata").get("time")
-      timestamp="2020-11-23T23:13:26Z"
+      timestamp = jdic.get("metadata").get("time")
+      #format from TTN 2020-11-24T21:16:28.425589977Z
+      #timestamp="2020-11-23T23:13:26Z"
+      #timestamp cut last 11 chars and add Z to get right format
+      timestamp = timestamp[:-11] + "Z"
 
       # search for parkingmeter with id
       pmobj = globals.container.get_element_by_id(uid)

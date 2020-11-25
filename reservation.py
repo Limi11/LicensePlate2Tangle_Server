@@ -36,15 +36,13 @@ def reservation():
             globals.container.set_active_reservations(x)
             for i in range(globals.container.get_container_size):
                 if x[i] == True:
-                    data = globals.container.get_element_by_index(i).get_next_booking()
+                    uid = globals.container.get_element_by_index(i).get_id()
+                    lic = globals.container.get_element_by_index(i).get_license()
+                    ts = globals.container.get_element_by_index(i).get_next_booking_start()
                     url = globals.container.get_element_by_index(i).get_url()
-                    client.ttn_client(data,url)
+                    # We have an active reservation send to TTN!
+                    client.ttn_client(uid,lic,ts,url)
             globals.container.set_active_reservations(x)
 
         # release thread after access of global container
         globals.mutex.release()
-
-        # This part is for testing
-        # TTN communication test:
-        # client.ttn_client("test","https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/private_parking_meter/request_bin?key=ttn-account-v2.5FoVG4v605fZEwpptKoKXjR9frXaVlVsjjxI9HJ2cMA")
-        # time.sleep(30)

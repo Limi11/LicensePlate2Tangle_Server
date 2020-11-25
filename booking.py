@@ -11,27 +11,23 @@ import globals
 import pprint
 import jsonschema 
 
-# include functions
-
 # include classes 
 from parkingmeter import ParkingMeter
-from wallet import Wallet
 from iota import Iota
 from iota import Iota, Address
 from iota.codecs import TrytesDecodeError
 from iota import TryteString
 from jsonschema import validate
 from threading import Thread, Lock, Event
-
+from wallet import Wallet
 
 # ********initialization********* #
 
-# define variables
 wallet = Wallet()
 
-# generate a new seed, only for Prototype, there must be a static defined seed in future 
-# seed = wallet.get_seed()
-seed = "PIRMZQL99FHJMVJROYYTRWVHFSRZGZMP9AAAREEACRZUCYTBEQ9NDQYKTNYPUCTEQ99AOSYAQQHCVZQWH"
+# get seed for further operations
+seed = wallet.get_seed()
+#print(seed)
 
 # set security level
 security_level = 2
@@ -114,11 +110,9 @@ def booking():
                 re.append(i)
               
 
-        
         # second, ask node for transaction objects (list) that we have filtered out
         respond = api.find_transaction_objects(addresses = tx)
         #print(respond)
-      
 
         # variable to check itteration of following for loop
         iteration = 0
@@ -138,12 +132,14 @@ def booking():
                         print(data)
                         uid = data.get("uid")
                         element = globals.container.get_element_by_id(uid)
-                        if element is not str:
-                            print(element)
-                            element.set_booking(data)
-                            element.set_next_booking()
+                        if(element == None):
+                            print("ID is not registered!")
+
                         else:
-                            print(element)
+                            element.set_booking(data)
+                            element.set_next_booking_start()
+                            element.set_next_booking_end()
+                       
                 else: 
                     print("The transaction is not valid!")
             

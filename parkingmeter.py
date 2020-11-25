@@ -18,7 +18,8 @@ class ParkingMeter(object):
     __ttnurl = ""
     __balance = 0
     __bookings = []
-    __nextbooking = {'lic':'', 'ts': 0, 'te': 0}
+    __nextbooking_start = 0
+    __nextbooking_end = 0
     __reserved = False
     __occupied = False
 
@@ -36,14 +37,15 @@ class ParkingMeter(object):
 
     # json data from device
     __data = ""
-
+# payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
     # data for streams
     __sdata = [{ "sensor": "Temperature", 
     "data": [{ "temp": ""}]}, { "sensor": "Humidity", 
     "data": [{ "hum": ""}]}, { "sensor": "Pressure", 
     "data": [{"pres":""}]}, { "sensor": "Status", 
     "data": [{ "stat": ""}]},{ "sensor": "Bookings", 
-    "data": [{ "book": []}]} ]
+    "data": [{ "book": [""]}]},{ "sensor": "Address",
+    "data": [{"addr" : ""}]}]
     
     # consturctor 
     def __init__(self,id,channelid,license,location,iotaaddress):
@@ -60,11 +62,12 @@ class ParkingMeter(object):
     # method to return sensordata in json streams format
     def get_streamsdata(self):
         self.__sdata[0]["data"][0]["temp"] = str(self.__temp)
-        self.__sdata[0]["data"][0]["hum"] = str(self.__hum)
-        self.__sdata[0]["data"][0]["pres"] = str(self.__pres)
-        self.__sdata[0]["data"][0]["stat"] = str(self.__stat)
-        self.__sdata[0]["data"][0]["book"] = str(self.__bookings)
-        x = json.dumps(self.__sdata[0])
+        self.__sdata[1]["data"][0]["hum"] = str(self.__hum)
+        self.__sdata[2]["data"][0]["pres"] = str(self.__pres)
+        self.__sdata[3]["data"][0]["stat"] = str(self.__stat)
+        self.__sdata[4]["data"][0]["book"] = str(self.__bookings)
+        self.__sdata[5]["data"][0]["addr"] = str(self.__iotaaddress)
+        x = json.dumps(self.__sdata)
         return x
 
     # get timestamp of sensordata 
@@ -75,22 +78,48 @@ class ParkingMeter(object):
     def get_url(self):
         return self.__ttnurl
 
-    # set the next booking time
-    def get_next_booking(self):
-        return self.__nextbooking
+    # get the next booking start time
+    def get_next_booking_start(self):
+        return self.__nextbooking_start
+
+    def get_next_booking_end(self):
+        return self.__nextbooking_end
 
     # get iota address
     def get_address(self):
         return self.__iotaaddress
     
-    # set the next booking time
-    def set_next_booking(self):
+    # set the next booking time start
+    def set_next_booking_start(self):
         x = self.__bookings[0]["ts"]
-        for i in range(len(self.__bookings)-1):
-            if x < self.__bookings[i+1]["ts"]:
-                x = self.__bookings[i+1]
-        self.__nextbooking = x
+        if(x == None):
+            return
+        else:
+            for i in range(len(self.__bookings)-1):
+                if x < self.__bookings[i+1]["ts"]:
+                    x = self.__bookings[i+1]
+            self.__nextbooking_start = x
 
+    
+    # set the next booking time end
+    def set_next_booking_end(self):
+        x = self.__bookings[0]["te"]
+        if(x == None):
+            return
+        else:
+            for i in range(len(self.__bookings)-1):
+                if x > self.__bookings[i+1]["te"]:
+                    x = self.__bookings[i+1]
+            self.__nextbooking_end = x
+
+    # get bookings
+    def get_bookings(self):
+        return self.__bookings
+
+    # get license 
+    def get_license(self):
+        return self.__license
+    
     # method to set sensor values out http post sensor dict
     def set_sensordata(self,data):
         self.__data = data
@@ -125,7 +154,8 @@ class ParkingMeter(object):
     # set a new booking with license number start and endtime 
     def set_booking(self, data):
         # parkdauer berechnen aktuell statisch 10Miota/h
-        seconds = int(self.__balance/1000000*60*60)
+        #seconds = int(self.__balance/1000000*60*60)
+        seconds = int(self.__balance*1000)
         # get license out of data
         license = data.get("lic")
         # get stime out of data

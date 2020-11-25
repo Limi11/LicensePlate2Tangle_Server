@@ -10,7 +10,7 @@ import base64
 
 
 # include classes
-
+from container import Container
 
 # **********functions*********** #
 
@@ -36,7 +36,7 @@ def streams_client(data):
 
 
 # this is the funcion for sending data to the things network
-def ttn_client(data, url_streams):
+def ttn_client(id,lic,ts,url_streams):
     
     # definition of headers type
     headers = {'content-type': 'application/json'}
@@ -44,22 +44,43 @@ def ttn_client(data, url_streams):
     # this is the a raw payload example that things network will accept
     payload = {
     "dev_id": "parking_meter_cc1",    # The device ID
-    "port": 1,                # LoRaWAN FPort
-    "confirmed": False,       # Whether the downlink should be confirmed by the device
-    "payload_raw": "AQIDBA=="} # Base64 encoded payload: [0x01, 0x02, 0x03, 0x04]
+    "port": 1,                        # LoRaWAN FPort
+    "confirmed": False,               # Whether the downlink should be confirmed by the device
+    "payload_raw": "AQIDBA=="}        # Base64 encoded payload: [0x01, 0x02, 0x03, 0x04]
+
+    # set device id
+    payload["dev_id"] = id
+
+    payload_raw = {
+        "l":lic,
+        "t":ts
+    }
+
+    print(payload_raw)
+
+    payload_raw = json.dumps(payload_raw).encode('utf-8')
+
+    # encode payload with base64
+    encoded_payload_raw = base64.b64encode(payload_raw)
+
+    payload["payload_raw"] = encoded_payload_raw
+
+    print(type(payload))
 
     # transform dict into a byte format
-    payload = json.dumps(payload).encode('utf-8')
+    #send_payload = json.dumps(payload).encode('utf-8')
 
-    print(payload)
-    encoded_payload = payload
+    #print(payload)
 
-    # base64 is not accepted !!!
+    # base64 is not accepted !!! ?? why
     # encoded payload from base64 format
     #encoded_payload = base64.b64encode(payload)
 
+    spayload = "\"str(payload)\""
+
+
     # make a post request to the gateway
-    r = requests.post(url_streams, data=encoded_payload, headers=headers)
+    r = requests.post(url_streams, data=str(spayload), headers=headers)
 
     # post status of post request
     print(r.status_code)

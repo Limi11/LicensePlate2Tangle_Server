@@ -22,3 +22,12 @@ def mutex():
     # create mutex to be threadsafe
     mutex = Lock()
 
+def hostip():
+    global hostip
+    # create local host variable
+    hostip = "127.0.0.1"
+
+def port():
+    global port
+    # create global port variable
+    port = 65432

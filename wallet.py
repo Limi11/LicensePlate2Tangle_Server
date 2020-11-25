@@ -1,12 +1,18 @@
 
-# includes 
+# This is the Iota Wallet class file
+
+# **********includes*********** #
+
 from iota import Iota
+import json
+import pathlib
 
 
+# **********class************** #
 
 class Wallet(object):
 
-    __seed = "JBN9ZRCOH9YRUGSWIQNZWAIFEZUBDUGTFPVRKXWPAUCEQQFS9NHPQLXCKZKRHVCCUZNF9CZZWKXRZVCWQ"
+    __seed = ""
 
     __api = Iota('https://nodes.devnet.iota.org:443', __seed, testnet = True)
     
@@ -14,8 +20,20 @@ class Wallet(object):
 
     __counter = 0
     
+
+    def __init__(self):
+        # get the current working directory
+        path = str(pathlib.Path(__file__).parent)
+        # get init file data and build our parkingmeters container #home/ubuntu
+        with open(path + "/init.txt") as json_file:
+            data = json.load(json_file)
+            self.__seed = data["SEED"]
+
     def get_seed(self):
         return self.__seed
+    
+    def set_seed(self, seed):
+        self.__seed = seed
     
     def get_address(self):
         is_spent = 1

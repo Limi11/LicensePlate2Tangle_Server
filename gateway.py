@@ -9,18 +9,21 @@ import json
 # include functions
 import booking
 import reservation
-import qrcode
 import streams
 import sensordata
 import globals
 import subprocess
-
+import pathlib
+import time
+import client
 
 # include classes 
 from parkingmeter import ParkingMeter
 from container import Container
 from iota import Iota
 from threading import Thread
+from wallet import Wallet
+
 
 # ********initialization********* #
 
@@ -33,22 +36,36 @@ globals.container_init()
 globals.event_init()
 globals.addrees_index_init()
 globals.mutex()
+globals.hostip()
+globals.port()
 
-# get init file data and build our parkingmeters container
-with open("/home/ubuntu/IOTLicensePlate2Tangle/LicensePlate2Tangle_Server/init.txt") as json_file:
+# get the current working directory
+path = str(pathlib.Path(__file__).parent)
+#print(path)
+
+# get init file data and build our parkingmeters container #home/ubuntu
+with open(path + "/init.txt") as json_file:
     data = json.load(json_file)
     for p in data["ParkingMeters"]:
         parkingmeter = ParkingMeter(p["ID"],1234,"Free",p["Location"],booking.newaddress())
         globals.container.add(parkingmeter)
+    globals.hostip = data["HOST"]
+    globals.port = int(data["PORT"])
+    seed = str(data["SEED"])
+    autorun = bool(data["Auto_Run_Gateway"])
+    
 
 # now we need to get the reservation informations back from tangle
-# ... this will be done with keepy in future
+# ... this will be done with keepy in future ..............
+
 
 # the keepy and streams-http-gateway folders must be in the project folder!
-# start http streams gateway
-subprocess.call("gnome-terminal --command=\"cargo run --release\"" , cwd="Streams-http-gateway", shell=True)
-# start keepy 
-subprocess.call("gnome-terminal --command=\"node keepy.js\"" , cwd="Keepy", shell=True)
+# start http streams gateway & start keepy
+if(autorun == True):
+    subprocess.call("gnome-terminal --command=\"cargo run --release\"" , cwd="Streams-http-gateway", shell=True)
+    subprocess.call("gnome-terminal --command=\"node keepy.js\"" , cwd="Keepy", shell=True)
+else:
+    print("You need to start Keepy and HTTP Gateway manualy!")
 
 # **********functions*********** #
 # here only short functions are defined
@@ -73,3 +90,10 @@ reservationthread.start()
 streamsthread.start()
 
 # ***********test************** #
+
+
+time.sleep(10)
+uid = globals.container.get_element_by_index(0).get_id()
+lic = globals.container.get_element_by_index(0).get_license()
+ts = globals.container.get_element_by_index(0).get_next_booking_start()
+client.ttn_client(uid,lic,ts,"https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/my-app-id/my-process-id?key=ttn-account-v2.secret")
