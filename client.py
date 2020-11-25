@@ -18,7 +18,7 @@ from container import Container
 def streams_client(data):
     
     # 127.0.0.1 is the local host address
-    url_keppy = "http://127.0.0.1:3002/messages"
+    url_keppy = "http://0.0.0.0:3002/messages"
 
     # definition of headers type
     headers = {'content-type': 'application/json'}

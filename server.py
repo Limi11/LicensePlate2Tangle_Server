@@ -1,3 +1,5 @@
+
+
 #  This is the http server function which can get post messagen from TTN network or get messages from mobile app
 
 # **********includes*********** #
@@ -8,7 +10,8 @@ import requests
 import time
 import base64
 import globals
-
+import html
+import datetime
 
 # include classes
 from container import Container
@@ -36,10 +39,10 @@ class Server(BaseHTTPRequestHandler):
       # read content with length
       post_body = self.rfile.read(content_len)
 
+      print(post_body)
+      
       # copie content into parking meter object
       post_to_object(post_body)
-
-      print(post_body)
 
       # set event for receiving data
       globals.receive_data.set()
@@ -53,28 +56,40 @@ class Server(BaseHTTPRequestHandler):
 
       self.send_response(200)
 
-      # we don't need the header
-      # header = self.headers
+      header = self.headers
       
+      header = header.as_string()
+
+      print(header)
+
       # the uid is in the path
-      path = self.path
+      #path = self.path
       
       self.end_headers()
 
-      path = str(path)
+      #path = str(path)
 
-      uid = path[5:]
+      # print(path)
+
+      # print("Das ist der header: " + header)
+
+      #index = header.find(":")
+      #index = index + 2
+
+      uid = header[5:21]
       
       #print("This is the header: " + str(header))
-      print("New GET request from udi: " + uid)
+      print("New GET request from uid: " + uid)
 
+      #print(type(uid))
+      #print(uid)
+      #print(str(uid))
       # search object with udi
       try:
-          pm = globals.container.get_element_by_id(uid)
+          pm = globals.container.get_element_by_id(str(uid))
       except:
           print("Uid from GET request is not registered!")
           pass
-    
 
       # get iota address of uid
       address = pm.get_address()
@@ -158,10 +173,11 @@ def post_to_object(data):
 
       # get timestamp of sensordata
       timestamp = jdic.get("metadata").get("time")
+      index = timestamp.find(".")
       #format from TTN 2020-11-24T21:16:28.425589977Z
       #timestamp="2020-11-23T23:13:26Z"
       #timestamp cut last 11 chars and add Z to get right format
-      timestamp = timestamp[:-11] + "Z"
+      timestamp = timestamp[:index] + "Z"
 
       # search for parkingmeter with id
       pmobj = globals.container.get_element_by_id(uid)

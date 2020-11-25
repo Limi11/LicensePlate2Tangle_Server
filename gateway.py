@@ -89,11 +89,13 @@ bookingthread.start()
 reservationthread.start()
 streamsthread.start()
 
+print("Listening on port: " + str(globals.port)) 
+
 # ***********test************** #
 
 
-time.sleep(10)
-uid = globals.container.get_element_by_index(0).get_id()
-lic = globals.container.get_element_by_index(0).get_license()
-ts = globals.container.get_element_by_index(0).get_next_booking_start()
-client.ttn_client(uid,lic,ts,"https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/my-app-id/my-process-id?key=ttn-account-v2.secret")
+#time.sleep(10)
+#uid = globals.container.get_element_by_index(0).get_id()
+#lic = globals.container.get_element_by_index(0).get_license()
+#ts = globals.container.get_element_by_index(0).get_next_booking_start()
+#client.ttn_client(uid,lic,ts,"https://integrations.thethingsnetwork.org/ttn-eu/api/v2/down/my-app-id/my-process-id?key=ttn-account-v2.secret")

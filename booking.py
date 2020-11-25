@@ -103,7 +103,7 @@ def booking():
             
         # first, get a list of addresses that received money "output transactions"
         for i in range(len(addresses)):
-            print(addresses[i])
+           # print(addresses[i])
             if balances.get("balances")[i]>0:
                 # get back the transaction object of address i from tangle
                 tx.append(addresses[i]) 
@@ -145,6 +145,7 @@ def booking():
             
             # if there was a value transaction we need a new address
             x = newaddress()
+            print("New address: " + x)
             # iteration does not know which elements got a transaction
             # we have saved the index of elements that received a payment 
             # in re[]

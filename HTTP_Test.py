@@ -71,7 +71,7 @@ payload = {
 payload = json.dumps(payload)
 
 # make a post request to the gateway
-# r = requests.post(url, data=payload, headers=headers)
+r = requests.post(urlttn, data=payload, headers=headers)
 
 # make a get request to the gateway
 # old format  params={"uid":"E24F43FFFE44C3FC"}
