@@ -56,11 +56,12 @@ def streams():
         # '{ "iot2tangle": [ { "sensor": "Temperature", "data": [ { "temp": "21.7" } ] }, { "sensor": "Humidity", "data": [ { "hum": "56.29"}]}, { "sensor": "Pressure", "data": [ { "pres": "981.46" } ] }, { "sensor": "Status", "data": [ {"stat": "0x00" } ] }, { "sensor": "Bookings", "data": [ { "book": "2" } ] }, { "sensor": "Address", "data": [ { "addr": "IEEUHAEC9M9KGQWVA9BBYI9MFTJFDYOYKCYCH9CATDMUJLSMUJYH9AXQKTYLYNMIHAFVR9L9OBRXRODB9" } ] } ], "device": "E24F43FFFE44C3FC", "timestamp": "1606202006" }'
 
         payload = "{\"iot2tangle\": " + data + " ," + "\"device\": \"" + str(devid) + "\", \"timestamp\": \"" + str(timestamp) + "\" }"
-        print(payload)
+        # print(payload)
 
         # string to json conerstion
         payload = json.loads(payload)
-
+        
+        print("Send data to Streams:")
         print(payload)
 
         client.streams_client(payload)

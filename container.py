@@ -34,7 +34,7 @@ class Container(object):
     def get_element_by_id(self, ID):
         self.__last_update_id = ID
         for i in range(len(self.__items)):
-            print(self.__items[i].get_id() + "==" + ID)
+           # print(self.__items[i].get_id() + "==" + ID)
             if self.__items[i].get_id() == ID:
                 return self.__items[i]
     

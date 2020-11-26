@@ -65,7 +65,7 @@ def ttn_client(id,lic,ts,url_streams):
 
     payload["payload_raw"] = encoded_payload_raw
 
-    print(type(payload))
+    # print(type(payload))
 
     # transform dict into a byte format
     #send_payload = json.dumps(payload).encode('utf-8')

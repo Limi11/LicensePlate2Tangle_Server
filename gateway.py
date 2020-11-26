@@ -16,6 +16,7 @@ import subprocess
 import pathlib
 import time
 import client
+import os
 
 # include classes 
 from parkingmeter import ParkingMeter
@@ -61,9 +62,10 @@ with open(path + "/init.txt") as json_file:
 
 # the keepy and streams-http-gateway folders must be in the project folder!
 # start http streams gateway & start keepy
+DEVNULL = open(os.devnull, 'wb')
 if(autorun == True):
-    subprocess.call("gnome-terminal --command=\"cargo run --release\"" , cwd="Streams-http-gateway", shell=True)
-    subprocess.call("gnome-terminal --command=\"node keepy.js\"" , cwd="Keepy", shell=True)
+    subprocess.call("gnome-terminal --command=\"cargo run --release\"" , cwd="Streams-http-gateway", shell=True, stdout=DEVNULL, stderr=DEVNULL)
+    subprocess.call("gnome-terminal --command=\"node keepy.js\"" , cwd="Keepy", shell=True, stdout=DEVNULL, stderr=DEVNULL )
 else:
     print("You need to start Keepy and HTTP Gateway manualy!")
 
