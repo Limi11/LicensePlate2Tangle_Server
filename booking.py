@@ -130,29 +130,20 @@ def booking():
                         print(data)
                         uid = data.get("uid")
                         element = globals.container.get_element_by_id(uid)
+                        print(element)
                         if(element == None):
                             print("ID is not registered!")
                         else:
                             element.set_booking(data)
                             element.set_next_booking_start()
                             element.set_next_booking_end()
-                       
-                else: 
-                    print("The transaction is not valid!")
-            
-            # if there was a value transaction we need a new address
-            x = newaddress()
-            print("New address: " + str(x))
-            # iteration does not know which elements got a transaction
-            # we have saved the index of elements that received a payment 
-            # in re[]
-            # print(re)
-            # print(iteration)
-            y = re[iteration]
-            elements[y].set_iota_address(x)
-            iteration =+ 1
-            # print(iteration)
-          
+                            x = newaddress()
+                            print("New address: " + str(x))
+                            element.set_iota_address(x)
+                else:
+                    print("The transaction is not valid")
+
+
         # release thread after access of global container
         globals.mutex.release()
 

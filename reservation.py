@@ -20,7 +20,9 @@ def reservation():
     print("start reservation thread...")
 
     while(True):
-        
+
+        time.sleep(4)
+
         # temporary list
         x = []
 
@@ -29,12 +31,15 @@ def reservation():
 
         # check if there are active reservations
         for i in globals.container.get_all_elements():
+            print(i.get_id())
             x.append(i.check_booking())
-        
+
+        print(x)
+
         # check if there was an update
         if x != globals.container.get_active_reservations():
-            globals.container.set_active_reservations(x)
             for i in range(len(x)):
+                print(i)
                 if x[i] == True:
                     uid = globals.container.get_element_by_index(i).get_id()
                     lic = globals.container.get_element_by_index(i).get_license()
@@ -43,7 +48,8 @@ def reservation():
                     # We have an active reservation send to TTN!
                     print("Send booking Information to TTN")
                     client.ttn_client(uid,lic,ts,url)
-            globals.container.set_active_reservations(x)
+       
+        globals.container.set_active_reservations(x)
 
         # release thread after access of global container
         globals.mutex.release()

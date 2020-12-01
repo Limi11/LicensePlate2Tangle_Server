@@ -168,11 +168,14 @@ class ParkingMeter(object):
     def check_booking(self):
         temp1 = self.__bookings
         temp2 = False
+        print(self.__bookings)
         for i in self.__bookings:
             x = int(time.time())
             if i["ts"] < x:
                 if i["te"] > x:
+                    print(True)
                     temp2 = True
+                    break
                 else:
                     temp1.remove(i)
                     print("Time is over, booking deleted!")
