@@ -1,5 +1,3 @@
-
-
 #  This is the http server function which can get post messagen from TTN network or get messages from mobile app
 
 # **********includes*********** #
@@ -94,9 +92,10 @@ class Server(BaseHTTPRequestHandler):
       # get iota address of uid
       address = pm.get_address()
 
+      # print(address)
       # android app needs an address with checksum
       address_with_checksum = address.with_valid_checksum()
-
+      # print(address_with_checksum)
       # convert address to string
       address_with_checksum = str(address_with_checksum)
 
@@ -110,7 +109,9 @@ class Server(BaseHTTPRequestHandler):
 
       print(str(parking_time))
 
-      sdata = {"Adr":address_with_checksum,"Tim":parking_time}
+      #sdata = {"Adr":address_with_checksum,"Tim":parking_time}
+      sdata = {"Adr":address_with_checksum,"Tim":"100"}
+
 
       print(sdata)
 
@@ -160,39 +161,43 @@ def post_to_object(data):
       print(decoded_payload)
 
       # json loads makes a dictionary out of json string
-      decoded_payload = json.loads(decoded_payload)
+      try:
+          decoded_payload = json.loads(decoded_payload)
+          # lock thread during access of global container
+          globals.mutex.acquire()
 
-      # lock thread during access of global container
-      globals.mutex.acquire()
+          # extract ID out of payload_field
+          uid = jdic.get("hardware_serial")
 
-      # extract ID out of payload_field
-      uid = jdic.get("hardware_serial")
+          # extract "downlink_url"
+          downlink = jdic.get("downlink_url") 
 
-      # extract "downlink_url"
-      downlink = jdic.get("downlink_url") 
+          # get timestamp of sensordata
+          timestamp = jdic.get("metadata").get("time")
+          index = timestamp.find(".")
+          #format from TTN 2020-11-24T21:16:28.425589977Z
+          #timestamp="2020-11-23T23:13:26Z"
+          #timestamp cut last 11 chars and add Z to get right format
+          timestamp = timestamp[:index] + "Z"
 
-      # get timestamp of sensordata
-      timestamp = jdic.get("metadata").get("time")
-      index = timestamp.find(".")
-      #format from TTN 2020-11-24T21:16:28.425589977Z
-      #timestamp="2020-11-23T23:13:26Z"
-      #timestamp cut last 11 chars and add Z to get right format
-      timestamp = timestamp[:index] + "Z"
+          # search for parkingmeter with id
+          pmobj = globals.container.get_element_by_id(uid)
 
-      # search for parkingmeter with id
-      pmobj = globals.container.get_element_by_id(uid)
+          # set sensordata in parkingmeter object with id
+          pmobj.set_sensordata(decoded_payload)
 
-      # set sensordata in parkingmeter object with id
-      pmobj.set_sensordata(decoded_payload)
+          # set ttnurl 
+          pmobj.set_downlink(downlink)
 
-      # set ttnurl 
-      pmobj.set_downlink(downlink)
+          # convert into unix timestemp and set timestamp in parkinmeter wiht id  
+          pmobj.set_unixtimestamp(timestamp)
 
-      # convert into unix timestemp and set timestamp in parkinmeter wiht id  
-      pmobj.set_unixtimestamp(timestamp)
+          # release thread after access of global container
+          globals.mutex.release()
+      except:
+          print("Empty message for LORA response!")
+            
 
-      # release thread after access of global container
-      globals.mutex.release()
 
 
 

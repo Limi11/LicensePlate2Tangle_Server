@@ -77,8 +77,6 @@ def booking():
         # list has the same order as license plate index
         addresses = globals.container.get_iota_adress_list()
 
-        # release thread after access of global container
-        globals.mutex.release()
 
         #print(addresses[0]) # debug
         #print(addresses[1]) # debug
@@ -87,13 +85,13 @@ def booking():
         balances = api.get_balances(addresses, None)
 
         # lock thread during access of global container
-        globals.mutex.acquire()
+        # globals.mutex.acquire()
         
         # set address balance attribute of all license plate elements 
         globals.container.set_balances(balances.get("balances"))
 
         # release thread after access of global container
-        globals.mutex.release()
+        # globals.mutex.release()
 
         # init list of addresses that received a transaction
         tx = []
@@ -112,13 +110,13 @@ def booking():
 
         # second, ask node for transaction objects (list) that we have filtered out
         respond = api.find_transaction_objects(addresses = tx)
-        #print(respond)
+        # print(respond)
 
         # variable to check itteration of following for loop
         iteration = 0
 
         # lock thread during access of global container
-        globals.mutex.acquire()
+        # globals.mutex.acquire()
 
         # third, check all responds for validity and save data
         for i in respond.get("transactions"):
@@ -134,7 +132,6 @@ def booking():
                         element = globals.container.get_element_by_id(uid)
                         if(element == None):
                             print("ID is not registered!")
-
                         else:
                             element.set_booking(data)
                             element.set_next_booking_start()
@@ -145,13 +142,16 @@ def booking():
             
             # if there was a value transaction we need a new address
             x = newaddress()
-            print("New address: " + x)
+            print("New address: " + str(x))
             # iteration does not know which elements got a transaction
             # we have saved the index of elements that received a payment 
             # in re[]
+            # print(re)
+            # print(iteration)
             y = re[iteration]
             elements[y].set_iota_address(x)
             iteration =+ 1
+            # print(iteration)
           
         # release thread after access of global container
         globals.mutex.release()

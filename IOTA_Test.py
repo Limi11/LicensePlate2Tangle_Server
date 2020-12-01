@@ -10,7 +10,7 @@ from iota import Address
 from iota import TryteString
 
 # test data in correct format
-testdata = "{\"uid\":\"E24F43FFFE44C3FC\",\"lic\": \"LB-AB-1234\",\"ts\": 1235489}"
+testdata = "{\"uid\":\"E24F43FFFE44C2C6\",\"lic\": \"LB-AB-1234\",\"ts\":1606773190}"
 #testdata = json.loads(testdata)
 
 # testseed
@@ -18,6 +18,8 @@ seed = 'CVBCQHX9MUZZBEAZGOO9GYHWYBEZRMTWNXKBQHNSFETKUPHKHRGUYWLTSGXYAQEVLNI9XTQP
 
 # devine that we use the devnet
 api = Iota('https://nodes.devnet.iota.org:443', seed, testnet = True)
+
+#print(api.get_new_addresses())
 
 # check balance of account
 balance = api.get_account_data()
@@ -28,7 +30,7 @@ print(balance)
 #print(balances)
 
 # address for output transaction
-address = 'BMAMHVEKDSOUM9OAFQEKNAMCXOZIH9BNVAKFQYXWNULKMPWRB9GOM9QCHLTR9SZZYCFRPKCCLDYSFDZ9W'
+address = 'KPBARTLQFH9LYMGMRNTPUJYNVYMRVMYGLCUZCGGYGLKGZEAJGYSOHSZSZIJEYENKYWYIQSXBUOZLYDGTC'
 
 tx = ProposedTransaction(address=Address(address),value = 1, message=TryteString.from_unicode(testdata))
 

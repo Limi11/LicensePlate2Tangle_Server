@@ -34,13 +34,14 @@ def reservation():
         # check if there was an update
         if x != globals.container.get_active_reservations():
             globals.container.set_active_reservations(x)
-            for i in range(globals.container.get_container_size):
+            for i in range(len(x)):
                 if x[i] == True:
                     uid = globals.container.get_element_by_index(i).get_id()
                     lic = globals.container.get_element_by_index(i).get_license()
                     ts = globals.container.get_element_by_index(i).get_next_booking_start()
                     url = globals.container.get_element_by_index(i).get_url()
                     # We have an active reservation send to TTN!
+                    print("Send booking Information to TTN")
                     client.ttn_client(uid,lic,ts,url)
             globals.container.set_active_reservations(x)
 

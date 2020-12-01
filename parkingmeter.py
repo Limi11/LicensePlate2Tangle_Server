@@ -15,7 +15,7 @@ class ParkingMeter(object):
     __license = ""
     __location = ""
     __iotaaddress = ""
-    __ttnurl = ""
+    __ttnurl = "https://www.thethingsnetwork.org/"
     __balance = 0
     __bookings = []
     __nextbooking_start = 0
@@ -97,7 +97,7 @@ class ParkingMeter(object):
         else:
             for i in range(len(self.__bookings)-1):
                 if x < self.__bookings[i+1]["ts"]:
-                    x = self.__bookings[i+1]
+                    x = self.__bookings[i+1]["ts"]
             self.__nextbooking_start = x
 
     
@@ -109,7 +109,7 @@ class ParkingMeter(object):
         else:
             for i in range(len(self.__bookings)-1):
                 if x > self.__bookings[i+1]["te"]:
-                    x = self.__bookings[i+1]
+                    x = self.__bookings[i+1]["te"]
             self.__nextbooking_end = x
 
     # get bookings
