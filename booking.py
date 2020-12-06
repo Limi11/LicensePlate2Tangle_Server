@@ -1,3 +1,4 @@
+
 # this module implements functions to check the iota adresses for new bookings
 # the function booking() runs a thread in the mainfile
 
@@ -83,6 +84,8 @@ def booking():
 
         # check balance of all addresses in the list
         balances = api.get_balances(addresses, None)
+       
+        #print(balances) # debug
 
         # lock thread during access of global container
         # globals.mutex.acquire()
@@ -101,11 +104,13 @@ def booking():
             
         # first, get a list of addresses that received money "output transactions"
         for i in range(len(addresses)):
-           # print(addresses[i])
+            #print(addresses[i])
             if balances.get("balances")[i]>0:
                 # get back the transaction object of address i from tangle
                 tx.append(addresses[i]) 
                 re.append(i)
+                #print("List of addresses that received reservation:" + str(tx))
+                #print("Index of elements that received reservation: " + str(re))
               
 
         # second, ask node for transaction objects (list) that we have filtered out
@@ -126,11 +131,12 @@ def booking():
                 data = i.signature_message_fragment.decode(errors='ignore')
                 if(validateJson(data)):
                         data = json.loads(data)
-                        print("There is a valid transaction")
-                        print(data)
+                        #print("There is a valid transaction")
+                        #print(data)
                         uid = data.get("uid")
+                        print("Uid that receives payment: " + str(uid))
                         element = globals.container.get_element_by_id(uid)
-                        print(element)
+                        print("Element that receives pament: " + str(element))
                         if(element == None):
                             print("ID is not registered!")
                         else:

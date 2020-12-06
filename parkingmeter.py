@@ -10,33 +10,6 @@ import json
 
 class ParkingMeter(object):
 
-    __id = ""
-    __channelid = ""
-    __license = ""
-    __location = ""
-    __iotaaddress = ""
-    __ttnurl = "https://www.thethingsnetwork.org/"
-    __balance = 0
-    __bookings = []
-    __nextbooking_start = 0
-    __nextbooking_end = 0
-    __reserved = False
-    __occupied = False
-
-    # unix timestamp of sensordata
-    __timestamp = 0
-
-    # temperature
-    __temp = 0.0
-    # humidity
-    __hum = 0
-    # pressure
-    __pres = 0
-    # status
-    __stat = 0x00
-
-    # json data from device
-    __data = ""
 # payload = { "iot2tangle": [ { "sensor": "Gyroscope", "data": [ { "x": "4514" }, { "y": "244" }, { "z": "-1830" } ] }, { "sensor": "Acoustic", "data": [ { "mp": "1" } ] } ], "device": "DEVICE_ID_1", "timestamp": 1558511111 }
     # data for streams
     __sdata = [{ "sensor": "Temperature", 
@@ -53,7 +26,29 @@ class ParkingMeter(object):
         self.__channelid = channelid
         self.__license = license
         self.__location = location
-        self.__iotaaddress = iotaaddress
+        self.__iotaaddress = iotaaddress   
+        self.__ttnurl = "https://www.thethingsnetwork.org/"
+        self.__balance = 0
+        self.__bookings = []
+        self.__nextbooking_start = 0
+        self.__nextbooking_end = 0
+        self.__reserved = False
+        self.__occupied = False
+
+    # unix timestamp of sensordata
+    __timestamp = 0
+
+    # temperature
+    __temp = 0.0
+    # humidity
+    __hum = 0
+    # pressure
+    __pres = 0
+    # status
+    __stat = 0x00
+
+    # json data from device
+    __data = ""
     
     # method to get id of parking meter
     def get_id(self):
@@ -120,6 +115,9 @@ class ParkingMeter(object):
     def get_license(self):
         return self.__license
     
+    def set_license(self, lic):
+        self.__license = lic
+    
     # method to set sensor values out http post sensor dict
     def set_sensordata(self,data):
         self.__data = data
@@ -157,27 +155,28 @@ class ParkingMeter(object):
         #seconds = int(self.__balance/1000000*60*60)
         seconds = int(self.__balance*1000)
         # get license out of data
-        license = data.get("lic")
+        self.__license = data.get("lic")
         # get stime out of data
         stime = data.get("ts")
         # calculate endtime stime unixtime + seconds
         etime = stime + seconds
-        self.__bookings.append({"lic":license,"ts":stime,"te":etime})
+        self.__bookings.append({"lic":self.__license,"ts":stime,"te":etime})
         print("New booking:" + str(self.__bookings[-1]))
 
     def check_booking(self):
         temp1 = self.__bookings
         temp2 = False
-        print(self.__bookings)
+        #print(self.__bookings)
         for i in self.__bookings:
             x = int(time.time())
             if i["ts"] < x:
                 if i["te"] > x:
-                    print(True)
+                    #print(True)
                     temp2 = True
                     break
                 else:
                     temp1.remove(i)
+                    self.__license = "Free"
                     print("Time is over, booking deleted!")
         if temp2 == True:
             self.__reserved = True

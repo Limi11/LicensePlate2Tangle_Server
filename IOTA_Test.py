@@ -10,7 +10,7 @@ from iota import Address
 from iota import TryteString
 
 # test data in correct format
-testdata = "{\"uid\":\"E24F43FFFE44C2C6\",\"lic\": \"LB-AB-1234\",\"ts\":1606856440}"
+testdata = "{\"uid\":\"E24F43FFFE44C2C6\",\"lic\": \"LB-AB-1234\",\"ts\":1606904502}"
 #testdata = json.loads(testdata)
 
 # testseed
@@ -30,9 +30,9 @@ print(balance)
 #print(balances)
 
 # address for output transaction
-address = 'QIEJPKPH9RYPPCOOUPNEPMPVKTIUURUFMVMMQFEUTSGADZGURBMKCLWOCACHZVFCAMOSRMX9AHAMTTTPB'
+address = 'OCARSUKVZEZJUKSQU9RIKLANCKHDGCZGELJUUISZTAWQAUXSHHD9RJTKKM9ZMDNDZYFKEBKHEXHBPFAED'
 
-tx = ProposedTransaction(address=Address(address),value = 1, message=TryteString.from_unicode(testdata))
+tx = ProposedTransaction(address=Address(address),value = 10, message=TryteString.from_unicode(testdata))
 
 
 result = api.send_transfer(transfers=[tx])

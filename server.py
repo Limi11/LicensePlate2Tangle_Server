@@ -170,7 +170,8 @@ def post_to_object(data):
           uid = jdic.get("hardware_serial")
 
           # extract "downlink_url"
-          downlink = jdic.get("downlink_url") 
+          downlink = jdic.get("downlink_url")
+          print("New downlink url: " + str(downlink)) 
 
           # get timestamp of sensordata
           timestamp = jdic.get("metadata").get("time")

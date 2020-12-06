@@ -21,7 +21,7 @@ def reservation():
 
     while(True):
 
-        time.sleep(4)
+        time.sleep(10)
 
         # temporary list
         x = []
@@ -31,25 +31,27 @@ def reservation():
 
         # check if there are active reservations
         for i in globals.container.get_all_elements():
-            print(i.get_id())
+            #print("Check element: " + str(i))
+            #print("ID of element: " + str(i.get_id()))
             x.append(i.check_booking())
 
-        print(x)
+        #print("List of elements with reservation: " + str(x))
 
         # check if there was an update
-        if x != globals.container.get_active_reservations():
-            for i in range(len(x)):
-                print(i)
-                if x[i] == True:
-                    uid = globals.container.get_element_by_index(i).get_id()
-                    lic = globals.container.get_element_by_index(i).get_license()
-                    ts = globals.container.get_element_by_index(i).get_next_booking_start()
-                    url = globals.container.get_element_by_index(i).get_url()
-                    # We have an active reservation send to TTN!
-                    print("Send booking Information to TTN")
-                    client.ttn_client(uid,lic,ts,url)
+        #if x != globals.container.get_active_reservations():
+        for i in range(len(x)):
+             #print("Index of checking loop: " + str(i))
+             if x[i] == True:
+                 uid = globals.container.get_element_by_index(i).get_id()
+                 lic = globals.container.get_element_by_index(i).get_license()
+                 ts = globals.container.get_element_by_index(i).get_next_booking_start()
+                 url = globals.container.get_element_by_index(i).get_url()
+                 #print(str(uid) + str(lic) + str(ts) + str(url))
+                 # We have an active reservation send to TTN!
+                 print("Send booking Information to TTN")
+                 client.ttn_client(uid,lic,ts,url)
        
-        globals.container.set_active_reservations(x)
+        #globals.container.set_active_reservations(x)
 
         # release thread after access of global container
         globals.mutex.release()

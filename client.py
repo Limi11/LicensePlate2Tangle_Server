@@ -36,7 +36,7 @@ def streams_client(data):
 
 
 # this is the funcion for sending data to the things network
-def ttn_client(id,lic,ts,url_streams):
+def ttn_client(id,lic,ts,url):
     
     # definition of headers type
     headers = {'content-type': 'application/json'}
@@ -49,7 +49,8 @@ def ttn_client(id,lic,ts,url_streams):
     "payload_raw": "AQIDBA=="}        # Base64 encoded payload: [0x01, 0x02, 0x03, 0x04]
 
     # set device id
-    payload["dev_id"] = id
+    payload["dev_id"] = str("\"" + id + "\"")
+    print(payload["dev_id"])
 
     payload_raw = {
         "l":lic,
@@ -76,11 +77,12 @@ def ttn_client(id,lic,ts,url_streams):
     # encoded payload from base64 format
     #encoded_payload = base64.b64encode(payload)
 
-    spayload = "\"str(payload)\""
+    #spayload = "\"str(payload)\""
+    print(url)
 
 
     # make a post request to the gateway
-    r = requests.post(url_streams, data=str(spayload), headers=headers)
+    r = requests.post(url, data=payload, headers=headers)
 
     # post status of post request
     print(r.status_code)
